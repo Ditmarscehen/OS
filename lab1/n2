@@ -1,1 +1,9 @@
-
+#!/bin/bash
+s=""
+r=""
+q="q"
+while [[ $r != $q ]]; do
+s="$s$r"
+read r
+done
+echo $s
