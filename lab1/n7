@@ -1,1 +1,2 @@
-
+#!/bin/bash
+grep -E -h -s -o "[A-Za-z0-9.]+@[a-z]+\.+[a-z.]+" /etc/* | awk '{printf("%s, ", $1)}' > emails.lst
