@@ -1,0 +1,31 @@
+#!/bin/bash
+IFS=$'\n'
+prev=-1
+summ=0
+num=0
+one=1
+for str in $(cat out4.txt)
+  do
+  str1=$(echo `expr match "$str" '.*\(:.*:\)'`)
+  cur=$(echo `expr match "$str1" '.*\(=.* \)'`)
+  cur=$(echo "$cur" | cut -c 2-)
+  cur=$(echo "$cur"| rev | cut -c 2- | rev)
+  if [[ "$cur" != "$prev" ]]&&[[ "$prev" != "-1" ]];then 
+     avg=$(echo "scale=10; $summ/$num" | bc) 
+     if [[ "$(echo $avg| cut -c 1)" == "." ]]
+     then avg="0$avg"
+     fi
+     echo "Average_Sleeping_Childre_of_ParentID=$prev is $avg"
+     summ=0
+     num=0
+    
+  fi
+  echo "$str"
+  str1=$(echo `expr match "$str" '.*\(=.*\)'`)
+  val=$(echo "$str1" | cut -c 2-)
+  prev=$cur
+  summ=$(echo "scale=10; $summ+$val" | bc)
+  num=$(echo "scale=10; $num+$one" | bc) 
+  done > out5.txt
+  avg=$(echo "scale=10; $summ/$num" | bc) 
+  echo "Average_Sleeping_Childre_of_ParentID=$prev is $avg" >> out5.txt
