@@ -1,0 +1,18 @@
+#!/bin/bash
+
+for pid in $(ps -axo pid)
+do 
+  if [[ !(-f "/proc/$pid/status") ]]; then continue; fi
+  ppid=$(cat /proc/"$pid"/status|grep -E "PPid.*"|awk '{print $2;}')
+  ser=$(cat /proc/"$pid"/sched|grep -E "se.sum_exec_runtime.*"|awk '{print $3;}')
+  ns=$(cat /proc/"$pid"/sched|grep -E "nr_switches.*"|awk '{print $3;}')
+  avg=$(echo "scale=10; $ser/$ns" | bc)
+  if [[ "$(echo $avg| cut -c 1)" == "." ]]
+     then avg="0$avg"
+  fi
+  if [[ "$ppid" != "" ]]
+     then echo "ProcessID=$pid : Parent_ProcessID=$ppid : Average_Running_Time=$avg"
+  fi
+  
+done |sort -n -t "=" -k3 > out4.txt
+   
