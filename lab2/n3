@@ -1,0 +1,4 @@
+#!/bin/bash
+
+ps u a| tail -3|head -1| awk '{print $2;}' >out3.txt
+
