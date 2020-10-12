@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ps u a|grep -E "dmitry.*"| awk '{OFS =":"; print $2, $11;}' >readed1.txt
+wc -l < readed1.txt > out1.txt
+cat readed1.txt >> out1.txt
