@@ -2,6 +2,7 @@
 
 for pid in $(ps -axo pid)
 do 
+   if [[ !(-f "/proc/$pid/io") ]]; then continue; fi
    readbytes=$(cat /proc/"$pid"/io|grep -E "read_bytes.*"|awk '{print $2;}')
    if [[ "$readbytes" != "" ]];then
       echo "$pid $readbytes"
@@ -12,6 +13,7 @@ sleep 1
 num=0
 for pid in $(ps -axo pid)
 do 
+    if [[ !(-f "/proc/$pid/io") ]]; then continue; fi
    second=$(cat /proc/"$pid"/io|grep -E "read_bytes.*"|awk '{print $2;}')
    if [[ "$second" != "" ]];then  
      echo "$pid $second" 
@@ -20,18 +22,16 @@ done  > 7sixty.txt
 IFS=$'\n'
 for str in $(cat 7zero.txt)
    do
-   pid=$(echo `expr match "$str" '\([0-9]*\)'`)
-   rev=$(echo "$str"|rev)
-   val1=$(echo `expr match "$rev" '\([0-9]*\)'`|rev)
-   str2=$(cat 7sixty.txt|grep -E "${pid}.*"|awk '{print $2;}'|head -1)
-   ans=$(echo "scale=10; $str2-$val1" | bc) 
-   echo "$pid $ans $str2"
-   done |sort -nk2 |tail -3 >answer.txt
-IFS=$'\n'
-for str in $(cat answer.txt)
-   do
-   pid=$(echo `expr match "$str" '\([0-9]*\)'`)
-   rev=$(echo "$str"|rev)
-   val1=$(echo `expr match "$rev" '\([0-9]*\)'`|rev)
-   echo "$pid $val1"
-   done >out7.txt
+   pid=$(echo $str|awk '{print $1;}')
+   val1=$(echo $str|awk '{print $2;}')
+   val2=$(cat 7sixty.txt|grep -E "${pid} .*"|awk '{print $2;}'|head -1)
+   ans=$(echo "scale=10; $val2-$val1" | bc) 
+   echo "$pid $ans"
+   done |sort -nrk2 |head -3 >out7.txt
+for str in $(cat out7.txt)
+do
+pid=$(echo "$str"|awk '{print $1;}')
+ans=$(echo "$str"|awk '{print $2;}')
+cms=$(ps -p $pid -o cmd --no-headers)
+echo "$pid : $cms : $ans"
+done >outt7.txt
