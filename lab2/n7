@@ -9,7 +9,7 @@ do
    fi
 done > 7zero.txt
 
-sleep 1
+sleep 60
 num=0
 for pid in $(ps -axo pid)
 do 
