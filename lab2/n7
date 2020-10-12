@@ -1,0 +1,37 @@
+#!/bin/bash
+
+for pid in $(ps -axo pid)
+do 
+   readbytes=$(cat /proc/"$pid"/io|grep -E "read_bytes.*"|awk '{print $2;}')
+   if [[ "$readbytes" != "" ]];then
+      echo "$pid $readbytes"
+   fi
+done > 7zero.txt
+
+sleep 1
+num=0
+for pid in $(ps -axo pid)
+do 
+   second=$(cat /proc/"$pid"/io|grep -E "read_bytes.*"|awk '{print $2;}')
+   if [[ "$second" != "" ]];then  
+     echo "$pid $second" 
+   fi
+done  > 7sixty.txt
+IFS=$'\n'
+for str in $(cat 7zero.txt)
+   do
+   pid=$(echo `expr match "$str" '\([0-9]*\)'`)
+   rev=$(echo "$str"|rev)
+   val1=$(echo `expr match "$rev" '\([0-9]*\)'`|rev)
+   str2=$(cat 7sixty.txt|grep -E "${pid}.*"|awk '{print $2;}'|head -1)
+   ans=$(echo "scale=10; $str2-$val1" | bc) 
+   echo "$pid $ans $str2"
+   done |sort -nk2 |tail -3 >answer.txt
+IFS=$'\n'
+for str in $(cat answer.txt)
+   do
+   pid=$(echo `expr match "$str" '\([0-9]*\)'`)
+   rev=$(echo "$str"|rev)
+   val1=$(echo `expr match "$rev" '\([0-9]*\)'`|rev)
+   echo "$pid $val1"
+   done >out7.txt
