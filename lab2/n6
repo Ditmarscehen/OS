@@ -1,0 +1,15 @@
+#!/bin/bash
+
+max=0
+pidMax=0
+for pid in $(ps -axo pid)
+do 
+   if [[ !(-f "/proc/$pid/status") ]]; then continue; fi
+  vmsize=$(cat /proc/"$pid"/status|grep -E "VmSize.*"|awk '{print $2;}')
+  if [[ "$max" -lt "$vmsize" ]]
+then max=$vmsize
+     pidMax=$pid
+fi
+done
+
+echo "$pidMax: $max" > out6.txt
