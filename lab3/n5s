@@ -1,0 +1,38 @@
+#! /bin/bash
+
+result=1
+operate="+"
+(tail -n 0 -f n5in) | 
+while true; do
+read line
+case $line in
+"+")
+operate="+"
+;;
+"*")
+operate="*"
+;;
+"QUIT")
+echo "exit"
+killall tail
+exit
+;;
+[0-9]*)
+case $operate in
+"+")
+result=$(($result + $line))
+;;
+"*")
+result=$(($result * $line))
+;;
+esac
+echo "$result"
+;;
+*)
+echo "invalid input!"
+killall tail
+exit
+;;
+esac
+done
+
