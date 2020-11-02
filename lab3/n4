@@ -1,4 +1,6 @@
 #!/bin/bash
-nice -n 6 ./n4s&
-nice -n 0 ./n4s&
-nice -n 0 ./n4s&
+nice -n 20 ./n4s&
+./n4s&
+./n4s&pid3=$!
+sleep 5
+kill -15 $pid3
