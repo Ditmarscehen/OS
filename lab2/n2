@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ps u a|grep -E "/sbin/[^/]*"| awk '{print $2;}' >out2.txt
+ps u a x|grep -E " /sbin/[^/]*"|awk '{print $2}' >out2.txt 
 head -n -1 out2.txt > temp.txt ;
 cat temp.txt > out2.txt
 
