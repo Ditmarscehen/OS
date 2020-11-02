@@ -1,4 +1,5 @@
 #!/bin/bash
 
-ps u a| tail -3|head -1| awk '{print $2;}' >out3.txt
+ps u x a >out3s
+cat out3s | tail -3|head -1 >outt3.txt	
 
