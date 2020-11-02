@@ -1,0 +1,16 @@
+#! /bin/bash
+./n5s& > n5in
+while true
+do
+read line
+echo "$line" >> n5in
+if [[ "$line" == "QUIT" ]]
+then
+exit
+fi
+if [[ ! "$line" =~ [0-9]+ && "$line" != "+" && "$line" != "*" ]]
+then 
+echo "invalid input"
+exit
+fi
+done
