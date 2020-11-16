@@ -1,1 +1,12 @@
-c
+#!/bin/bash
+read fileName
+trashDir="$HOME/.trash"
+[ -e $trashDir ] || mkdir $trashDir
+trashName=1
+while [ -e $trashDir/$trashName ]; do
+trashName=$(($trashName+1))
+done
+ln $fileName $trashDir/$trashName
+rm $fileName
+echo "$PWD/$fileName:$trashName">>$HOME/.trash.log
+
