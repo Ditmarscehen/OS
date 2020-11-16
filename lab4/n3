@@ -1,0 +1,42 @@
+#!/bin/bash
+currDate=$(date +"%Y-%m-%d")
+availableDate=$(date +"%Y-%m-%d" -d "7 days ago")
+create=1
+ls -F $HOME| grep -E "Backup-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"| while read line; do
+ dat=$(awk -F "-" '{print $2-$3-$4}')
+ if [[ "$dat" > "$availableDate" ]]; then
+  create=0
+  currDate=$dat
+ fi
+
+done
+backupDir="$HOME/Backup-$currDate"
+sourceDir="$HOME/source"
+if [[ "$create" == "1" ]]; then
+ mkdir "$HOME/Backup-$currDate"
+ echo "catalog created $backupDir date $currDate">n3c
+ ls -F $sourceDir| grep -E -v "[^/]+/"| while read line; do
+  cp $sourceDir/$line $backupDir 
+  echo "file name $line">>n3c
+ done
+ cat n3c>>$HOME/backup-report
+else
+ echo "catalog changed $backupDir date $currDate">n3c
+ ls -F $sourceDir| grep -E -v "[^/]+/"| while read line; do
+  if [ -f $backupDir/$line ]; then
+   backupSize=$(stat -c%s $backupDir/$line)
+   sourceSize=$(stat -c%s $sourceDir/$line)
+   if [[ $backupSize -ne $sourceSize ]]; then
+    mv $backupDir/$line $backupDir/$line$currDate
+    cp $sourceDir/$line $backupDir 
+    echo "$line $line$currDate">>n3o
+   fi
+   else
+    cp $sourceDir/$line $backupDir 
+    echo "$line">>n3n
+  fi
+  cat n3c>>$HOME/backup-report
+  cat n3n>>$HOME/backup-report
+  cat n3o>>$HOME/backup-report
+ done
+fi
