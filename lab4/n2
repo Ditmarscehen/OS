@@ -1,0 +1,23 @@
+#!/bin/bash
+fileName=$1
+trashLog=$HOME/trash.log
+trashDir="$HOME/.trash/"
+fileNameRev=$(echo $fileName | rev)
+rev $trashLog|grep -E "^[0-9]+:$fileNameRev/"| while read line; do
+ path=$(echo $line|rev|awk -F ":" '{print $1}')
+ trashName=$(echo $line|rev|awk -F ":" '{print $2}')
+ lengthFile=$(echo -n $fileName |wc -c)
+ lengthPath=$(echo -n $path |wc -c)
+ length=$(($lenthPath-$lengthFile))
+ catalog=${path:0:length}
+ echo "$catalog/$fileName"
+ read -r -p "restore file $path? [y/N]" ans </dev/tty
+ if [[ "$ans" == "y" ]]; then
+  [ -e $catalog ] || catalog=$HOME
+  rm $trashDir$trashName
+  ln $trashDir$trashName $catalog$fileName || read -r -p "enter another name" newFileName </dev/tty
+  ln $trashDir$trashName $catalog$newFileName
+ fi
+done
+
+
