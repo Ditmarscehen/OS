@@ -1,0 +1,16 @@
+#!/bin/bash
+backupDir=$(ls -tF $HOME| grep -E "Backup-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/"|head -n 1)
+restoreDir=$HOME/restore/
+ls -Ft $backupDir| grep -E -v "[^/]+/"| while read line; do
+ copied="0"
+ ls -Ft $restoreDir| grep -E -v "[^/]+/"| while read line1; do
+ str=$(echo $line| grep -E "^$line1[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]")
+ if [[ "$str" != "" ]]; then
+  copied="1"
+ fi
+ done
+ if [[ "$copied" == "0" ]]; then
+  cp $backupDir$line $restoreDir 
+ fi
+done
+ 
